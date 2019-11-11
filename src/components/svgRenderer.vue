@@ -66,8 +66,8 @@
         textPath(v-bind:xlink:href="'#' + link.id" startOffset= "50%") {{ link.name }}
 
     //- -> Node Labels
-    g.labels#node-labels( v-if="nodeLabels")
-      text.node-label(v-for="node in nodes"
+    g.labels#node-labels
+      text.node-label(v-for="node in nodes" v-if="nodeLabels || node.showLabel"
         :x='node.x + (getNodeSize(node) / 2) + (fontSize / 2)'
         :y='node.y + labelOffset.y'
         :font-size="fontSize"
@@ -154,7 +154,7 @@ export default {
       }
     },
     nodeStyle (node) {
-      return (node._color) ? 'fill: ' + node._color : ''
+      return node._color ? 'fill: ' + node._color : ''
     },
     linkStyle (link) {
       let style = {}
@@ -162,7 +162,7 @@ export default {
       return style
     },
     nodeClass (node, classes = []) {
-      let cssClass = (node._cssClass) ? node._cssClass : []
+      let cssClass = node._cssClass ? node._cssClass : []
       if (!Array.isArray(cssClass)) cssClass = [cssClass]
       cssClass.push('node')
       classes.forEach(c => cssClass.push(c))
