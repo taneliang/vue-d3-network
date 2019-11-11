@@ -30,7 +30,8 @@
     "component"
   ],
   "dependencies": {
-    "d3-force": "^1.0.6"
+    "d3-force": "^1.0.6",
+    "vue-svg-pan-zoom": "^1.1.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.4.0",
