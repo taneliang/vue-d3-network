@@ -120,7 +120,12 @@ export default {
     },
     resetSprites () {
       this.sprites = {}
-      let sprites = ['node', 'nodeSelected', 'nodePinned', 'nodeSelectedPinned']
+      let sprites = [
+        'node',
+        'nodeSelected',
+        'nodePinned',
+        'nodeSelectedPinned'
+      ]
       for (let sp of sprites) {
         this.sprites[sp] = this.nodeSprite(this.styles[sp])
       }
@@ -128,7 +133,9 @@ export default {
     // canvas click handler
     canvasClick (event) {
       let hitCtx = this.hitCanvas.getContext('2d')
-      let e = (event.touches) ? event.touches[0] || event.changedTouches[0] : event
+      let e = event.touches
+        ? event.touches[0] || event.changedTouches[0]
+        : event
       let scrollTop = document.body.scrollTop
       let scrollLeft = document.body.scrollLeft
       let x = e.clientX + scrollLeft - this.padding.x
@@ -147,7 +154,10 @@ export default {
               this.emit('dragEnd')
             }
             this.emit(shape.type + 'Click', [event, item])
-          } else if (event.type === 'mousedown' || event.type === 'touchstart') {
+          } else if (
+            event.type === 'mousedown' ||
+            event.type === 'touchstart'
+          ) {
             this.drag = item
             this.emit('dragStart', [event, item.index])
           }
@@ -174,14 +184,14 @@ export default {
       ctx.moveTo(link.source.x, link.source.y)
       ctx.lineTo(link.target.x, link.target.y)
       ctx.lineWidth = this.linkWidth
-      ctx.strokeStyle = (link._color) ? link._color : link.color
+      ctx.strokeStyle = link._color ? link._color : link.color
       ctx.stroke()
     },
     // draw text to canvas
     drawText (item, ctx, style, key) {
       ctx = this.setCtx(ctx, style)
       if (this.fontSize) ctx.font = this.fontSize + 'px ' + style.fontFamily
-      let text = (key) ? item[key] : item.name
+      let text = key ? item[key] : item.name
       // let x = (item.size) ? item.x + item.size : item.x
       // let y = (item.size) ? item.y + (item.size / 2) : item.y
       let x = item.x + this.labelOffset.x
@@ -225,7 +235,11 @@ export default {
         if (this.isOnView(node)) {
           if (!this.noNodes) {
             let sprite = this.getNodeSprite(node)
-            ctx.drawImage(sprite, node.x - sprite.width / 2, node.y - sprite.height / 2)
+            ctx.drawImage(
+              sprite,
+              node.x - sprite.width / 2,
+              node.y - sprite.height / 2
+            )
             // map node shape
             this.mapShape(node, 'node', this.drawNode, hitCtx)
           }
@@ -245,14 +259,19 @@ export default {
           // this.drawNode(node, ctx)
           // let sprite = this.sprites.nodeSelected
           let sprite = this.getNodeSprite(node)
-          ctx.drawImage(sprite, node.x - sprite.width / 2, node.y - sprite.height / 2)
+          ctx.drawImage(
+            sprite,
+            node.x - sprite.width / 2,
+            node.y - sprite.height / 2
+          )
         }
       }
     },
     getNodeSprite (node) {
       let name = this.nodeSpriteName(node)
       let sprite = this.sprites[name]
-      if (!sprite) { // set style and create sprite
+      if (!sprite) {
+        // set style and create sprite
         let style = this.loadNodeStyle(node)
         sprite = this.nodeSprite(style)
         this.sprites[name] = sprite
@@ -269,11 +288,16 @@ export default {
     },
     nodeSprite (style) {
       let size = this.nodeSize + this.styles.node.lineWidth
-      let canvasSize = (this.nodeSvg) ? size : size * 2
+      let canvasSize = this.nodeSvg ? size : size * 2
       let canvas = this.spriteCanvas(canvasSize)
       let ctx = canvas.getContext('2d')
       if (this.nodeSvg) {
-        let attrs = { width: size, height: size, class: style._cssClass || '', style: style._cssStyle || '' }
+        let attrs = {
+          width: size,
+          height: size,
+          class: style._cssClass || '',
+          style: style._cssStyle || ''
+        }
         let url = svgExport.svgDataToUrl(this.nodeSvg, attrs)
         if (url) {
           let img = new Image()
@@ -281,9 +305,9 @@ export default {
             ctx.drawImage(img, 0, 0)
             URL.revokeObjectURL(url)
           }
-          img.onerror = (error) => {
+          img.onerror = error => {
             // eslint-disable-next-line
-            console.log('error creating node image', error)
+            console.log("error creating node image", error);
           }
           img.src = url
         }
@@ -300,7 +324,9 @@ export default {
       return canvas
     },
     isOnView (obj) {
-      return (obj.x > 0 && obj.y > 0 && obj.x < this.size.w && obj.y < this.size.h)
+      return (
+        obj.x > 0 && obj.y > 0 && obj.x < this.size.w && obj.y < this.size.h
+      )
     },
     // index shapes by random colors
     mapShape (shape, type, drawFunc, hitCtx) {
@@ -316,7 +342,11 @@ export default {
       if (sprite) {
         sprite = this.cloneCanvas(sprite)
         sprite = this.fillCanvas(sprite, shape.colorIndex)
-        hitCtx.drawImage(sprite, shape.x - sprite.width / 2, shape.y - sprite.height / 2)
+        hitCtx.drawImage(
+          sprite,
+          shape.x - sprite.width / 2,
+          shape.y - sprite.height / 2
+        )
       } else {
         drawFunc(hitCtx, nShape)
       }
@@ -327,7 +357,8 @@ export default {
       let imgData = ctx.getImageData(0, 0, canvas.width, canvas.height)
       let pixels = canvas.width * canvas.height * 4
       for (let p = 3; p <= pixels; p += 4) {
-        if (imgData.data[p] > 0) { // a
+        if (imgData.data[p] > 0) {
+          // a
           imgData.data[p] = 255 // sers alpha max to prevent transparency match
           imgData.data[p - 3] = color.r // r
           imgData.data[p - 2] = color.g // g
@@ -399,7 +430,10 @@ export default {
         }
         styleName = name
       }
-      let style = Object.assign({}, this.styles[styleName] || this.updateStyle(styleName))
+      let style = Object.assign(
+        {},
+        this.styles[styleName] || this.updateStyle(styleName)
+      )
       if (node._color) {
         style.fillStyle = node._color
         style._cssStyle = 'fill:' + node._color
@@ -421,7 +455,11 @@ export default {
       let el = stylePicker.create('div', 'color-picker')
       let id = el.id
       el.setAttribute('style', 'background-color:' + color)
-      let style = stylePicker.mapStyle(id, { fillStyle: 'background-color' }, [])
+      let style = stylePicker.mapStyle(
+        id,
+        { fillStyle: 'background-color' },
+        []
+      )
       document.body.removeChild(el)
       return style
     },
@@ -443,9 +481,9 @@ export default {
   }
 }
 </script>
-<style lang="stylus">
-  canvas
-    position absolute
-    top 0
-    left 0
+<style scoped lang="stylus">
+canvas
+  position absolute
+  top 0
+  left 0
 </style>
